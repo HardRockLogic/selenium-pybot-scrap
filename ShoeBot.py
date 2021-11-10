@@ -15,11 +15,23 @@ dp = Dispatcher(bot)
 colours = None
 price = None
 size = None
+update = False
+
+
+def update_all():
+    global colours
+    colours = None
+    global price
+    price = None
+    global size
+    size = None
+    global update
+    update = False
 
 
 @dp.message_handler(commands=['start'])
 async def start_command(message: types.Message):
-    functional_buttons = ['\U0001F50E Почати пошук', 'Обери колір', 'Ціновий ліміт']
+    functional_buttons = ['\U0001F50E Start search', 'Update page', 'How to use me?']
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(*functional_buttons)
 
@@ -68,16 +80,22 @@ async def search_re_size(message: types.Message):
     await message.reply(f'{redefined}, {size}')
 
 
-# @dp.message_handler(Text(equals='Обери колір'))
-# async def color_filter(message: types.Message()):
-#     color_buttons = ['Чорний', 'Білий', 'Салатовий']
-#     color_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-#     color_keyboard.add(*color_buttons)
-#
-#     await message.answer('Ok', reply_markup=color_keyboard)
+@dp.message_handler(Text(equals='Update page'))
+async def update_flag(message: types.Message):
+    global update
+    update = True
+    await message.answer('Page will be refreshed after pressing search button\n'
+                         'It will take a little bit more than usual\n\n'
+                         'I recommend doing it several times a day at most')
 
 
-@dp.message_handler(Text(equals='\U0001F50E Почати пошук'))
+@dp.message_handler(Text(equals='How to use me?'))
+async def update_flag(message: types.Message):
+
+    await message.answer('Soon')
+
+
+@dp.message_handler(Text(equals='\U0001F50E Start search'))
 async def searching(message: types.Message()):
     color = 'Черные'
     is_available = False
@@ -86,7 +104,7 @@ async def searching(message: types.Message()):
 
     # Condition for both, colors and price limit defined by user
     if price and colours is not None:
-        for key, value in getData().items():
+        for key, value in getData(update=update).items():
             for colour in colours:
                 if int(value[0]) <= price and value[1].find(colour) != -1:
                     output = f'{hlink(color, value[2])}\n' \
@@ -102,9 +120,11 @@ async def searching(message: types.Message()):
         else:
             await message.answer(f'{counter} items found :)')
 
+        update_all()
+
     # Condition for only price defined by user
     if (colours is None) and price is not None:
-        for key, value in getData().items():
+        for key, value in getData(update=update).items():
             if int(value[0]) <= price:
                 output = f'{hlink(color, value[2])}\n' \
                          f'{hlink(value[1], key)}\n' \
@@ -119,6 +139,27 @@ async def searching(message: types.Message()):
         else:
             await message.answer(f'{counter} items found :)')
 
+        update_all()
+
+    # Condition for only colour(s) defined by user
+    if (price is None) and colours is not None:
+        for key, value in getData(update=update).items():
+            for colour in colours:
+                if value[1].find(colour) != -1:
+                    output = f'{hlink(color, value[2])}\n' \
+                             f'{hlink(value[1], key)}\n' \
+                             f'{hbold(value[0])} <b>грн</b>'
+                    time.sleep(0.5)
+                    await message.answer(output)
+                    is_available = True
+                    counter += 1
+
+        if is_available is False:
+            await message.answer('No such items :( ...')
+        else:
+            await message.answer(f'{counter} items found :)')
+
+        update_all()
 
 
 @dp.message_handler(commands=['help'])
@@ -130,19 +171,4 @@ async def start_command(message: types.Message):
 if __name__ == '__main__':
     executor.start_polling(dp)
 
-# @dp.message_handler(Text(equals='Почати пошук'))
-# async def searching(message: types.Message()):
-#     #discount_dict = getData()
-#     price = 3000
-#     color = 'Черные'
-#     color2 = 'синие'
-#     #output = []
-#     for key, value in getData().items():
-#         if int(value[0]) <= price and color2 in value[1]:
-#             output = f'{hlink(color, value[2])}\n' \
-#                      f'{hlink(value[1], key)}\n' \
-#                      f'{hbold(value[0])} <b>грн</b>'
-#             # output[0] = f'{hlink(value[1], key)}'
-#             # output[1] = f'{value[0]}'
-#             time.sleep(0.5)
-#             await message.answer(output)
+

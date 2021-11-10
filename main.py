@@ -9,62 +9,63 @@ import requests
 
 # url = 'https://md-fashion.com.ua/store/man/obuv/krossovki/under-armour'
 
-def getData(url = 'https://md-fashion.com.ua/store/man/obuv/krossovki/under-armour'):
+def getData(url = 'https://md-fashion.com.ua/store/man/obuv/krossovki/under-armour', update=False):
 
-    # options = webdriver.ChromeOptions()
-    #
-    # # add user agent
-    # options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)Chrome/95.0.4638.69 Safari/537.36")
-    #
-    # # disable webDriver mode
-    # options.add_argument("--disable-blink-features=AutomationControlled")
-    #
-    # # enter a headless mode to avoid rendering browser window
-    # options.headless = True
-    #
-    # driver = webdriver.Chrome(
-    #     executable_path="C:\\Users\\Legion\\Documents\\mdFashionScrap\\chromedriver.exe",
-    #     options=options
-    # )
-    #
-    # try:
-    #     driver.get(url)
-    #     button = driver.find_element(By.XPATH, "//a[@class='btn btn--accent']")
-    #
-    #     amount_of_filtered_items = int(button.get_attribute('data-filter-result'))
-    #     limit_of_items = int(button.get_attribute('data-items-on-page-limit'))
-    #
-    #     times_btn_click = math.ceil(amount_of_filtered_items / limit_of_items)
-    #     print(times_btn_click)
-    #
-    #     times_btn_click -= 1
-    #
-    #     while times_btn_click != 0:
-    #         button.click()
-    #         time.sleep(2)
-    #         times_btn_click -= 1
-    #
-    #     new_page = driver.page_source #encode('utf-8')
-    #
-    # except Exception as ex:
-    #     print(ex)
-    #
-    # finally:
-    #     driver.close()
-    #     driver.quit()
-    #
-    #
-    # # headers = {
-    # #     "user-agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)Chrome/95.0.4638.69 Safari/537.36"
-    # # }
-    #
-    # # req = requests.get(url, headers)
-    #
-    # #pre_soup = BeautifulSoup(new_page, 'lxml')
-    #
-    #
-    # with open('sneakers.html', 'w', encoding='utf-8') as file:
-    #    file.write(new_page)
+    if update:
+        options = webdriver.ChromeOptions()
+
+        # add user agent
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)Chrome/95.0.4638.69 Safari/537.36")
+
+        # disable webDriver mode
+        options.add_argument("--disable-blink-features=AutomationControlled")
+
+        # enter a headless mode to avoid rendering browser window
+        options.headless = True
+
+        driver = webdriver.Chrome(
+            executable_path="C:\\Users\\Legion\\Documents\\mdFashionScrap\\chromedriver.exe",
+            options=options
+        )
+
+        try:
+            driver.get(url)
+            button = driver.find_element(By.XPATH, "//a[@class='btn btn--accent']")
+
+            amount_of_filtered_items = int(button.get_attribute('data-filter-result'))
+            limit_of_items = int(button.get_attribute('data-items-on-page-limit'))
+
+            times_btn_click = math.ceil(amount_of_filtered_items / limit_of_items)
+            print(times_btn_click)
+
+            times_btn_click -= 1
+
+            while times_btn_click != 0:
+                button.click()
+                time.sleep(2)
+                times_btn_click -= 1
+
+            new_page = driver.page_source #encode('utf-8')
+
+        except Exception as ex:
+            print(ex)
+
+        finally:
+            driver.close()
+            driver.quit()
+
+
+        # headers = {
+        #     "user-agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)Chrome/95.0.4638.69 Safari/537.36"
+        # }
+
+        # req = requests.get(url, headers)
+
+        #pre_soup = BeautifulSoup(new_page, 'lxml')
+
+
+        with open('sneakers.html', 'w', encoding='utf-8') as file:
+           file.write(new_page)
 
     with open('sneakers.html', encoding='utf-8') as file:
         src = file.read()
