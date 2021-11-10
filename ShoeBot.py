@@ -43,7 +43,8 @@ async def start_command(message: types.Message):
 async def search_re_colour(message: types.Message):
     global colours
     colours = message.text
-    colours = colours[:-1].split(',')
+    intermediate = colours[:-1].split(',')
+    colours = list(map(lambda x: x.replace('й','е'), intermediate))
 
     temporary_list = []
     for item in colours:
