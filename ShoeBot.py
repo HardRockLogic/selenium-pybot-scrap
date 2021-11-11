@@ -35,15 +35,21 @@ async def start_command(message: types.Message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(*functional_buttons)
 
-    await message.reply('blyaaaa', reply_markup=keyboard)
+    await message.reply('Wasap mate, lets find some staff', reply_markup=keyboard)
 
 
 # Waiting for color input from user with regular expression handler
-@dp.message_handler(regexp=r'([А-Яа-я]{1,},)+')
+@dp.message_handler(regexp=r'([А-Яа-я]{1,}(,|$))+')
 async def search_re_colour(message: types.Message):
     global colours
     colours = message.text
-    intermediate = colours[:-1].split(',')
+    if ', ' in colours:
+        intermediate = colours[:-1].split(', ')
+    elif ' ' in colours:
+        intermediate = colours[:-1].split(' ')
+    else:
+        intermediate = colours[:-1].split(',')
+
     colours = list(map(lambda x: x.replace('й','е'), intermediate))
 
     temporary_list = []
@@ -93,12 +99,17 @@ async def update_flag(message: types.Message):
 @dp.message_handler(Text(equals='How to use me?'))
 async def update_flag(message: types.Message):
 
-    await message.answer('Soon')
+    await message.answer('Just jot down any colour (or colours divided by comma or space) in plural or single form,'
+                         'then type price limit and press \U0001F50E <b>Start search</b>\n\n'
+                         'You also can search only by colour(s) or price (or without any sorting option, '
+                         'but there are <i>too much</i> items)\n\n'
+                         'Btw the <b>Update page</b> button used to refresh data about items in stock, so'
+                         'there is no need to do this more than once a day')
 
 
 @dp.message_handler(Text(equals='\U0001F50E Start search'))
 async def searching(message: types.Message()):
-    color = 'Черные'
+    color = 'Image'
     is_available = False
     counter = 0
     await message.answer('Це може зайняти якийсь час')
@@ -124,7 +135,7 @@ async def searching(message: types.Message()):
         update_all()
 
     # Condition for only price defined by user
-    if (colours is None) and price is not None:
+    elif (colours is None) and price is not None:
         for key, value in getData(update=update).items():
             if int(value[0]) <= price:
                 output = f'{hlink(color, value[2])}\n' \
@@ -143,7 +154,7 @@ async def searching(message: types.Message()):
         update_all()
 
     # Condition for only colour(s) defined by user
-    if (price is None) and colours is not None:
+    elif (price is None) and colours is not None:
         for key, value in getData(update=update).items():
             for colour in colours:
                 if value[1].find(colour) != -1:
@@ -154,6 +165,24 @@ async def searching(message: types.Message()):
                     await message.answer(output)
                     is_available = True
                     counter += 1
+
+        if is_available is False:
+            await message.answer('No such items :( ...')
+        else:
+            await message.answer(f'{counter} items found :)')
+
+        update_all()
+
+    # Condition for no sorting options
+    else:  #price and colours is None:
+        for key, value in getData(update=update).items():
+            output = f'{hlink(color, value[2])}\n' \
+                     f'{hlink(value[1], key)}\n' \
+                     f'{hbold(value[0])} <b>грн</b>'
+            time.sleep(0.5)
+            await message.answer(output)
+            is_available = True
+            counter += 1
 
         if is_available is False:
             await message.answer('No such items :( ...')
