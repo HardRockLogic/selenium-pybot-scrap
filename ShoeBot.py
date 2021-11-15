@@ -1,5 +1,4 @@
 from tg_token import TOKEN
-import aiogram.dispatcher.webhook
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.dispatcher.filters import Text
@@ -67,7 +66,7 @@ async def search_re_colour(message: types.Message):
 
 
 # Waiting for price limit input
-@dp.message_handler(regexp='^(\d{4})$')
+@dp.message_handler(regexp=r'^(\d{4})$')
 async def search_re_price(message: types.Message):
     global price
     price = int(message.text)
@@ -75,8 +74,14 @@ async def search_re_price(message: types.Message):
     await message.reply(f'{redefined}')
 
 
+@dp.message_handler(regexp=r'^((\d{4})((\s-\s)|(-))(\d{4}))$')
+async def price_range(message: types.Message):
+    redefined = 'Диапазон: ' + message.text
+    await message.reply(f'{redefined}')
+
+
 # # Waiting for size input
-@dp.message_handler(regexp='^(\d{1,2}((,|\.)\d)?)$')
+@dp.message_handler(regexp=r'^(\d{1,2}((,|\.)\d)?)$')
 async def search_re_size(message: types.Message):
     global size
     if ',' in message.text:

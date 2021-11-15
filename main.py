@@ -7,9 +7,8 @@ from selenium.webdriver.common.by import By
 import time
 import requests
 
-# url = 'https://md-fashion.com.ua/store/man/obuv/krossovki/under-armour'
 
-def getData(url = 'https://md-fashion.com.ua/store/man/obuv/krossovki/under-armour', update=False):
+def getData(url='https://md-fashion.com.ua/store/man/obuv/krossovki/under-armour', update=False):
 
     if update:
         options = webdriver.ChromeOptions()
@@ -54,16 +53,6 @@ def getData(url = 'https://md-fashion.com.ua/store/man/obuv/krossovki/under-armo
             driver.close()
             driver.quit()
 
-
-        # headers = {
-        #     "user-agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)Chrome/95.0.4638.69 Safari/537.36"
-        # }
-
-        # req = requests.get(url, headers)
-
-        #pre_soup = BeautifulSoup(new_page, 'lxml')
-
-
         with open('sneakers.html', 'w', encoding='utf-8') as file:
            file.write(new_page)
 
@@ -74,24 +63,8 @@ def getData(url = 'https://md-fashion.com.ua/store/man/obuv/krossovki/under-armo
 
     sneakers = soup.find_all('span', class_='sale')
 
-    # images = soup.find_all('span', class_='img-place')
-    # img_list = []
-    # for img in images:
-    #     href = img.find_next('source').get('srcset')
-    #     for h in href.split(' '):
-    #         img_list.append(h)
-    #
-    # unique_list = []
-    # unique = np.unique(img_list)
-    # print(len(unique))
-
-
     img_urls = []
     sneaker_params = {}
-    # for sneaker in sneakers:
-    #     sneak_url = sneaker.find_previous().get('data-href')
-    #     sneaker_urls.append(sneak_url)
-    # print(len(sneaker_urls))
 
     for sneaker in sneakers:
         sneak_url = sneaker.find_previous().get('data-href')
@@ -101,15 +74,9 @@ def getData(url = 'https://md-fashion.com.ua/store/man/obuv/krossovki/under-armo
         intermediate = img_url.split(' ')
         sneaker_params[sneak_url] = (price, name, intermediate[2])
 
-    # for img in img_urls:
-    #     element = img.find('source').get('data-srcset')
-    #     intermediate = element.split(' ')
-    #     print(f'{intermediate[2]}\n')
 
-    #print(sneaker_params)
 
-    # for key, values in sneaker_params.items():
-    #     print(f'{key}\n', values)
+
     return sneaker_params
 
 getData('https://md-fashion.com.ua/store/man/obuv/krossovki/under-armour')
@@ -118,9 +85,11 @@ getData('https://md-fashion.com.ua/store/man/obuv/krossovki/under-armour')
 # its showing nothing although there are available items in store) >>>
 # https://md-fashion.com.ua/store/man/obuv/krossovki/nizkie-krossovki/under-armour/10
 
+
 def filter_size_by_url(size):
     url = f'https://md-fashion.com.ua/store/man/obuv/krossovki/nizkie-krossovki/under-armour/{size}'
     return url
+
 
 def main():
     getData('https://md-fashion.com.ua/store/man/obuv/krossovki/under-armour')
