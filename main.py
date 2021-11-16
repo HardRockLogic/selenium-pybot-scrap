@@ -8,7 +8,7 @@ import time
 import requests
 
 
-def getData(url='https://md-fashion.com.ua/store/man/obuv/krossovki/under-armour', update=False):
+def getData(url='https://md-fashion.com.ua/store/man/obuv/krossovki/under-armour', update=False, price_range_flag=False):
 
     if update:
         options = webdriver.ChromeOptions()
@@ -74,7 +74,10 @@ def getData(url='https://md-fashion.com.ua/store/man/obuv/krossovki/under-armour
         intermediate = img_url.split(' ')
         sneaker_params[sneak_url] = (price, name, intermediate[2])
 
-
+    if price_range_flag is not False:
+        if price_range_flag[0]:
+            sneaker_params = {key: value for key, value in sneaker_params.items()
+                              if price_range_flag[1][0] <= int(value[0]) <= price_range_flag[1][1]}
 
 
     return sneaker_params
