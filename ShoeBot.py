@@ -7,6 +7,9 @@ from aiogram.utils.markdown import hlink, hbold
 from main import getData, filter_size_by_url
 import time
 
+# TODO: 1. add ability to parse any type of equipment besides the sneakers
+#   2. (optional) allow user to search items by name in english
+
 bot = Bot(token=TOKEN, parse_mode=types.ParseMode.HTML)
 dp = Dispatcher(bot)
 
@@ -15,7 +18,7 @@ colours = None
 price = None
 size = None
 update = False
-price_range = False
+priceRange = False
 
 
 def update_all():
@@ -27,8 +30,8 @@ def update_all():
     size = None
     global update
     update = False
-    global price_range
-    price_range = False
+    global priceRange
+    priceRange = False
 
 
 @dp.message_handler(commands=['start'])
@@ -80,13 +83,13 @@ async def search_re_price(message: types.Message):
 # Waiting for price range input
 @dp.message_handler(regexp=r'^((\d{4})((\s-\s)|(-))(\d{4}))$')
 async def price_range(message: types.Message):
-    global price_range
+    global priceRange
     tup_of_prices = tuple(map(lambda a: int(a.strip()), message.text.split('-')))
 
     if tup_of_prices[0] >= tup_of_prices[1]:
         await message.reply('invalid range: second elem could not exceed the first elem')
     else:
-        price_range = (True, tup_of_prices)
+        priceRange = (True, tup_of_prices)
         redefined = 'Диапазон: ' + message.text
         await message.reply(f'{redefined}')
 
@@ -132,7 +135,7 @@ async def searching(message: types.Message()):
 
     # Condition for both, colors and price limit defined by user
     if price and colours is not None:
-        for key, value in getData(update=update, price_range_flag=price_range).items():
+        for key, value in getData(update=update, price_range_flag=priceRange).items():
             for colour in colours:
                 if int(value[0]) <= price and value[1].find(colour) != -1:
                     output = f'{hlink(color, value[2])}\n' \
@@ -152,7 +155,7 @@ async def searching(message: types.Message()):
 
     # Condition for only price defined by user
     elif (colours is None) and price is not None:
-        for key, value in getData(update=update, price_range_flag=price_range).items():
+        for key, value in getData(update=update, price_range_flag=priceRange).items():
             if int(value[0]) <= price:
                 output = f'{hlink(color, value[2])}\n' \
                          f'{hlink(value[1], key)}\n' \
@@ -171,7 +174,7 @@ async def searching(message: types.Message()):
 
     # Condition for only colour(s) defined by user
     elif (price is None) and colours is not None:
-        for key, value in getData(update=update, price_range_flag=price_range).items():
+        for key, value in getData(update=update, price_range_flag=priceRange).items():
             for colour in colours:
                 if value[1].find(colour) != -1:
                     output = f'{hlink(color, value[2])}\n' \
@@ -191,7 +194,7 @@ async def searching(message: types.Message()):
 
     # Condition for no sorting options
     else:  #price and colours is None:
-        for key, value in getData(update=update, price_range_flag=price_range).items():
+        for key, value in getData(update=update, price_range_flag=priceRange).items():
             output = f'{hlink(color, value[2])}\n' \
                      f'{hlink(value[1], key)}\n' \
                      f'{hbold(value[0])} <b>грн</b>'

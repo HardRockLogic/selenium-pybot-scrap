@@ -96,6 +96,8 @@ def filter_size_by_url(size):
 
 def main():
     getData('https://md-fashion.com.ua/store/man/obuv/krossovki/under-armour')
+    # TODO: 1. add size filtering to getData in advance;
+    #   2. resolve problem with factorial sizes like 10-5 etc.;
 
 
 if __name__ == '__main__':
